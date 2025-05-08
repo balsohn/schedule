@@ -30,4 +30,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         // Entity를 응답 DTO로 변환하여 반환
         return new ScheduleResponseDto(saveSchedule);
     }
+
+    @Override
+    public ScheduleResponseDto getScheduleById(Long id) {
+        // ID로 일정 조회 (없으면 예외 발생)
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        // Entity를 DTO를 반환하여 반환
+        return new ScheduleResponseDto(schedule);
+    }
 }

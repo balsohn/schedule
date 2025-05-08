@@ -1,14 +1,18 @@
 package com.example.schedules.repository;
 
 import com.example.schedules.entity.Schedule;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcScheduleRepository implements ScheduleRepository {
@@ -48,5 +52,25 @@ public class JdbcScheduleRepository implements ScheduleRepository {
         schedule.setId(key.longValue());
 
         return schedule;
+    }
+
+    @Override
+    public Optional<Schedule> findById(Long id) {
+        // 쿼리
+        String sql = "SELECT * FROM schedules WHERE id = ?";
+
+        // 쿼리 실행
+        List<Schedule> results = jdbcTemplate.query(sql, scheduleRowMapper, id);
+
+        // 결과가 있으면 첫번째 결과를 Optional로 감싸서 반환, 없으면 빈 Optional반환
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
+
+    @Override
+    public Schedule findByIdOrElseThrow(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다. id: " + id
+                ));
     }
 }

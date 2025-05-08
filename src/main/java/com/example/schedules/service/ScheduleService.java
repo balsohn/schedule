@@ -6,4 +6,5 @@ import com.example.schedules.dto.ScheduleResponseDto;
 public interface ScheduleService {
     // 일정 생성
     ScheduleResponseDto createSchedule(ScheduleRequestDto requestDto);
+    ScheduleResponseDto getScheduleById(Long id);
 }
