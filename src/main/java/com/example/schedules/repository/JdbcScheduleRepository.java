@@ -102,4 +102,10 @@ public class JdbcScheduleRepository implements ScheduleRepository {
         String sql = "UPDATE schedule SET todo = ?, writer = ?, modified_at = ? WHERE id = ?";
         return jdbcTemplate.update(sql, todo, writer, LocalDateTime.now(), id);
     }
+
+    @Override
+    public int delete(Long id) {
+        String sql = "DELETE FROM schedule WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }

@@ -79,4 +79,22 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return new ScheduleResponseDto(updatedSchedule);
     }
+
+    @Override
+    public void deleteSchedule(Long id, ScheduleRequestDto requestDto) {
+        // 일정 조회
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        // 비밀번호 확인
+        if (!schedule.getPassword().equals(requestDto.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        // 일정 삭제
+        int deleteRows = scheduleRepository.delete(id);
+
+        if (deleteRows == 0) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "일정 삭제에 실패했습니다.");
+        }
+    }
 }
