@@ -9,7 +9,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -93,5 +95,11 @@ public class JdbcScheduleRepository implements ScheduleRepository {
         sql += " ORDER BY modified_at DESC";
 
         return jdbcTemplate.query(sql, scheduleRowMapper, params.toArray());
+    }
+
+    @Override
+    public int update(Long id, String todo, String writer) {
+        String sql = "UPDATE schedule SET todo = ?, writer = ?, modified_at = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, todo, writer, LocalDateTime.now(), id);
     }
 }

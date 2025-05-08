@@ -4,7 +4,9 @@ import com.example.schedules.dto.ScheduleRequestDto;
 import com.example.schedules.dto.ScheduleResponseDto;
 import com.example.schedules.entity.Schedule;
 import com.example.schedules.repository.ScheduleRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -53,5 +55,28 @@ public class ScheduleServiceImpl implements ScheduleService {
         return schedules.stream()
                 .map(ScheduleResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto requestDto) {
+        // 일정 조회
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        // 비밀번호 확인
+        if (!schedule.getPassword().equals(requestDto.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        // 일정 수정
+        int updatedRows = scheduleRepository.update(id, requestDto.getTodo(), requestDto.getWriter());
+
+        if (updatedRows == 0) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "일정 수정에 실패했습니다.");
+        }
+
+        // 수정된 일정 조회 및 반환
+        Schedule updatedSchedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        return new ScheduleResponseDto(updatedSchedule);
     }
 }

@@ -11,4 +11,5 @@ public interface ScheduleService {
     ScheduleResponseDto createSchedule(ScheduleRequestDto requestDto);
     ScheduleResponseDto getScheduleById(Long id);
     List<ScheduleResponseDto> getAllSchedules(LocalDate date, String writer);
+    ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto requestDto);
 }
