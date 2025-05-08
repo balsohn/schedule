@@ -9,10 +9,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @Repository
 public class JdbcScheduleRepository implements ScheduleRepository {
@@ -29,7 +27,7 @@ public class JdbcScheduleRepository implements ScheduleRepository {
         schedule.setTodo(rs.getString("todo"));
         schedule.setWriter(rs.getString("writer"));
         schedule.setPassword(rs.getString("password"));
-        schedule.setCreateAt(rs.getTimestamp("created_at").toLocalDateTime());
+        schedule.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         schedule.setModifiedAt(rs.getTimestamp("modified_at").toLocalDateTime());
         return schedule;
     });
@@ -38,13 +36,13 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     @Override
     public Schedule save(Schedule schedule) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("schedules").usingGeneratedKeyColumns("id");
+        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("todo", schedule.getTodo());
         parameters.put("writer", schedule.getWriter());
         parameters.put("password", schedule.getPassword());
-        parameters.put("created_at", schedule.getCreateAt());
+        parameters.put("created_at", schedule.getCreatedAt());
         parameters.put("modified_at", schedule.getModifiedAt());
 
         // 저장 후 생성된 키 값 가져오기
@@ -57,7 +55,7 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     @Override
     public Optional<Schedule> findById(Long id) {
         // 쿼리
-        String sql = "SELECT * FROM schedules WHERE id = ?";
+        String sql = "SELECT * FROM schedule WHERE id = ?";
 
         // 쿼리 실행
         List<Schedule> results = jdbcTemplate.query(sql, scheduleRowMapper, id);
@@ -72,5 +70,28 @@ public class JdbcScheduleRepository implements ScheduleRepository {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다. id: " + id
                 ));
+    }
+
+    @Override
+    public List<Schedule> findAll(LocalDate date, String writer) {
+        String sql = "SELECT * FROM schedule WHERE 1=1";
+        List<Object> params = new ArrayList<>();
+
+        // 날짜로 필터링
+        if (date != null) {
+            sql += " AND DATE(modified_at) = ?";
+            params.add(date);
+        }
+
+        // 작성자로 필터링
+        if (writer != null) {
+            sql += " AND writer = ?";
+            params.add(writer);
+        }
+
+        // 수정일 내림차순 정렬
+        sql += " ORDER BY modified_at DESC";
+
+        return jdbcTemplate.query(sql, scheduleRowMapper, params.toArray());
     }
 }

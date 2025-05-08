@@ -16,7 +16,7 @@ public class Schedule {
     private String todo;
     private String writer;
     private String password;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     // 커스텀 생성자 - 일정생성시 사용
@@ -24,7 +24,7 @@ public class Schedule {
         this.todo = todo;
         this.writer = writer;
         this.password = password;
-        this.createAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
     }
 }

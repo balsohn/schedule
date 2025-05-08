@@ -6,6 +6,10 @@ import com.example.schedules.entity.Schedule;
 import com.example.schedules.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -38,5 +42,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         // Entity를 DTO를 반환하여 반환
         return new ScheduleResponseDto(schedule);
+    }
+
+    @Override
+    public List<ScheduleResponseDto> getAllSchedules(LocalDate date, String writer) {
+        // 레포지토리에서 필터링 된 일정 목록 조회
+        List<Schedule> schedules = scheduleRepository.findAll(date, writer);
+
+        // Entity 목록을 DTO 목록으로 변환하여 반환
+        return schedules.stream()
+                .map(ScheduleResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
