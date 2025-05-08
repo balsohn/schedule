@@ -11,5 +11,7 @@ public interface ScheduleRepository {
     Optional<Schedule> findById(Long id);
     Schedule findByIdOrElseThrow(Long id);
     List<Schedule> findAll(LocalDate date, String writer);
+    int update(Long id, String todo, String writer);
+    int delete(Long id);
 
 }

@@ -42,4 +42,22 @@ public class ScheduleController {
         List<ScheduleResponseDto> allSchedules = scheduleService.getAllSchedules(date, writer);
         return ResponseEntity.ok(allSchedules);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(
+            @PathVariable Long id,
+            @RequestBody ScheduleRequestDto requestDto
+    ) {
+        ScheduleResponseDto responseDto = scheduleService.updateSchedule(id, requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSchedule(
+            @PathVariable Long id,
+            @RequestBody ScheduleRequestDto requestDto
+    ) {
+        scheduleService.deleteSchedule(id, requestDto);
+        return ResponseEntity.noContent().build();
+    }
 }
