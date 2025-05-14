@@ -1,0 +1,27 @@
+-- 데이터베이스가 존재하지 않으면 생성
+CREATE DATABASE IF NOT EXISTS sparta_schedule;
+USE sparta_schedule;
+
+-- 테이블이 존재하면 삭제 (개발 환경에서만 사용, 테이블 삭제 순서 주의)
+DROP TABLE IF EXISTS schedule;
+DROP TABLE IF EXISTS writer;
+
+-- writer 테이블 생성
+CREATE TABLE writer (
+id BIGINT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50) NOT NULL,
+email VARCHAR(100) NOT NULL UNIQUE,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- schedule 테이블 생성 (외래키 포함)
+CREATE TABLE schedule (
+id BIGINT AUTO_INCREMENT PRIMARY KEY,
+todo VARCHAR(200) NOT NULL,
+writer_id BIGINT NOT NULL,
+password VARCHAR(100) NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+FOREIGN KEY (writer_id) REFERENCES writer(id)
+);
